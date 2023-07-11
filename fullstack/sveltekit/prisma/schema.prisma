@@ -1,0 +1,109 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id               String    @id @default(auto()) @map("_id") @db.ObjectId
+    profileImage     String?
+    email            String?
+    username         String    @unique
+    password         String
+    createdAt        DateTime  @default(now())
+    role             Role      @default(USER)
+    race             String
+    life             Float
+    strength         Float
+    intelligence     Float
+    dexterity        Float
+    gold             Int
+    exp              Float
+    level            Int
+    coins            Int       @default(0)
+    wonNpcFights     Int       @default(0)
+    lostNpcFights    Int       @default(0)
+    wonPlayerFights  Int       @default(0)
+    lostPlayerFights Int       @default(0)
+    lastFight        DateTime?
+
+    completedQuestUniques String[]
+    UserItem              UserItem[]
+}
+
+enum Role {
+    USER
+    ADMIN
+}
+
+model Quest {
+    id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+    title              String
+    uniqueChecker      String   @unique
+    description        String
+    image              String?
+    createdAt          DateTime @default(now())
+    updatedAt          DateTime @updatedAt
+    requiredQuestLevel Int
+    questExp           Float
+    questGold          Int
+}
+
+model Item {
+    id                String     @id @default(auto()) @map("_id") @db.ObjectId
+    allowedRaces      Race[]
+    requiredLevel     Int
+    bonusStrength     Int
+    bonusDexterity    Int
+    bonusIntelligence Int
+    bonusLife         Int
+    itemType          ItemType
+    name              String     @unique
+    description       String
+    image             String
+    UserItem          UserItem[]
+    ShopItem          ShopItem[]
+}
+
+model UserItem {
+    id                              String  @id @default(auto()) @map("_id") @db.ObjectId
+    user                            User    @relation(fields: [userId], references: [id])
+    userId                          String  @db.ObjectId
+    item                            Item    @relation(fields: [itemId], references: [id])
+    itemId                          String  @db.ObjectId
+    equipped                        Boolean @default(false)
+    possibleFirstBonusStrength      Int     @default(0)
+    possibleSecondBonusIntelligence Int     @default(0)
+    possibleThirdBonusDexterity     Int     @default(0)
+    possibleFourthBonusLife         Int     @default(0)
+}
+
+model ShopItem {
+    id            String   @id @default(auto()) @map("_id") @db.ObjectId
+    item          Item     @relation(fields: [itemId], references: [id])
+    itemId        String   @unique @db.ObjectId
+    goldPrice     Int
+    coinPrice     Int
+    quantity      Int
+    requiredLevel Int
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+}
+
+enum ItemType {
+    WEAPON
+    ARMOR
+    HELMET
+    SHOULDER
+    GLOVE
+    BOOT
+}
+
+enum Race {
+    Roque
+    Warrior
+    Sorcerer
+}

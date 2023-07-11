@@ -1,0 +1,12 @@
+
+
+@font-face {
+    font-family: "Medival";
+    src: url("/vinque.otf");
+}
+
+body {
+    font-family: "Medival" !important;
+    
+}
+
